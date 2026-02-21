@@ -1,9 +1,10 @@
 // ─── TELEGRAM CONFIG (replaced at build time by GitHub Actions) ──
-const TELEGRAM_BOT_TOKEN = '__TELEGRAM_BOT_TOKEN__';
-const TELEGRAM_CHAT_ID   = '__TELEGRAM_CHAT_ID__';
+const TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN';
+const TELEGRAM_CHAT_ID   = 'TELEGRAM_CHAT_ID';
 
 // ─── PRICING LOGIC ───────────────────────────────────────────────
 let cookieQty = 0;
+let customerData = {};
 
 function pricePerCookie(qty) {
   if (qty <= 0) return 0;
@@ -114,6 +115,8 @@ function submitOrder(e) {
   const subtotal    = cookieTotal + addonTotal;
   const deliveryFee = method === 'delivery' ? 15 : 0;
   const grandTotal  = subtotal + deliveryFee;
+
+  customerData = { name, contact };
 
   const dateStr = new Date(date + 'T00:00:00').toLocaleDateString('en-SG', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
