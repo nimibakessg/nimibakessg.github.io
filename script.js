@@ -1,5 +1,8 @@
+// ─── TELEGRAM CONFIG (replaced at build time by GitHub Actions) ──
+const TELEGRAM_BOT_TOKEN = '__TELEGRAM_BOT_TOKEN__';
+const TELEGRAM_CHAT_ID   = '__TELEGRAM_CHAT_ID__';
 
-// ─── PRICING LOGIC ────────────────────────────────────────────
+// ─── PRICING LOGIC ───────────────────────────────────────────────
 let cookieQty = 0;
 
 function pricePerCookie(qty) {
@@ -81,14 +84,14 @@ function renderCart() {
   btn.disabled = false;
 }
 
-// ─── NAVIGATION ───────────────────────────────────────────────
+// ─── NAVIGATION ──────────────────────────────────────────────────
 function goToStep(step) {
   document.querySelectorAll('.step-section').forEach(s => s.classList.remove('active'));
   document.getElementById('step-' + step).classList.add('active');
   window.scrollTo({ top: 0, behavior: 'smooth' });
 }
 
-// ─── FORM ─────────────────────────────────────────────────────
+// ─── FORM ────────────────────────────────────────────────────────
 function toggleDelivery() {
   const method = document.querySelector('input[name="method"]:checked').value;
   document.getElementById('address-wrap').style.display = method === 'delivery' ? 'block' : 'none';
@@ -96,21 +99,21 @@ function toggleDelivery() {
 
 function submitOrder(e) {
   e.preventDefault();
-  const form = e.target;
-  const name    = form.name.value.trim();
-  const contact = form.contact.value.trim();
-  const date    = form.date.value;
-  const method  = form.method.value;
-  const address = method === 'delivery' ? form.address.value.trim() : null;
+  const form       = e.target;
+  const name       = form.name.value.trim();
+  const contact    = form.contact.value.trim();
+  const date       = form.date.value;
+  const method     = form.method.value;
+  const address    = method === 'delivery' ? form.address.value.trim() : null;
   const specialReq = document.getElementById('special-req').value.trim();
 
-  const ppu = pricePerCookie(cookieQty);
+  const ppu         = pricePerCookie(cookieQty);
   const cookieTotal = Math.round(ppu * cookieQty * 100) / 100;
-  const addons = getAddons();
-  const addonTotal = addons.reduce((sum, a) => sum + a.price, 0);
-  const subtotal = cookieTotal + addonTotal;
+  const addons      = getAddons();
+  const addonTotal  = addons.reduce((sum, a) => sum + a.price, 0);
+  const subtotal    = cookieTotal + addonTotal;
   const deliveryFee = method === 'delivery' ? 15 : 0;
-  const grandTotal = subtotal + deliveryFee;
+  const grandTotal  = subtotal + deliveryFee;
 
   const dateStr = new Date(date + 'T00:00:00').toLocaleDateString('en-SG', {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -120,6 +123,7 @@ function submitOrder(e) {
     ? addons.map(a => `  + ${a.name} = $${a.price}`).join('\n') + '\n'
     : '';
 
+  // ── Instagram message ─────────────────────────────────────────
   const igMsg =
 `Hi nimi! I have placed an order!
 
@@ -134,19 +138,70 @@ Total Payment: $${grandTotal.toFixed(2)}${specialReq ? `\n\nSpecial requests: ${
 📅 ${method === 'delivery' ? 'Delivery' : 'Collection'} date: ${dateStr}
 🚚 Method: ${method === 'delivery' ? `Delivery\nAddress: ${address}` : 'Self-pickup'}
 
-Please have the payment proof attached! 
+Please have the payment proof attached!
 Thank you for your purchase!`;
 
   document.getElementById('ig-msg-preview').textContent = igMsg;
-
   document.getElementById('ig-link-btn').onclick = () => {
     navigator.clipboard.writeText(igMsg).catch(() => {});
     window.open('https://ig.me/m/nimi.sg_', '_blank');
   };
 
+  // ── Telegram notification ─────────────────────────────────────
+  const timestamp  = new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' });
+  const addonNames = addons.length > 0 ? addons.map(a => a.name).join(', ') : 'None';
+
+  const tgLines = [
+    `🍪 *New nimi Order!*`,
+    ``,
+    `🕐 *Time:* ${timestamp}`,
+    `👤 *Name:* ${name}`,
+    `📞 *Contact:* ${contact}`,
+    `📅 *Date:* ${dateStr}`,
+    `📦 *Method:* ${method === 'delivery' ? 'Delivery' : 'Self-pickup'}`,
+    address ? `📍 *Address:* ${address}` : null,
+    ``,
+    `🛒 *Cookies:* ${cookieQty} × $${ppu.toFixed(2)} = $${cookieTotal.toFixed(2)}`,
+    addonNames !== 'None' ? `🎁 *Add-ons:* ${addonNames} = $${addonTotal}` : null,
+    ``,
+    `💰 *Subtotal:* $${subtotal.toFixed(2)}`,
+    method === 'delivery' ? `🚚 *Delivery:* $15` : null,
+    `✅ *Total: $${grandTotal.toFixed(2)}*`,
+    specialReq ? `\n📝 *Special requests:* ${specialReq}` : null,
+  ].filter(l => l !== null).join('\n');
+
+  sendTelegramMessage(tgLines);
+
   goToStep('payment');
 }
 
+// ─── TELEGRAM SEND ───────────────────────────────────────────────
+async function sendTelegramMessage(text) {
+  if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === '__TELEGRAM_BOT_TOKEN__') {
+    console.warn('Telegram token not injected yet.');
+    return;
+  }
+  try {
+    const res = await fetch(
+      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          chat_id: TELEGRAM_CHAT_ID,
+          text,
+          parse_mode: 'Markdown',
+        }),
+      }
+    );
+    const data = await res.json();
+    if (!data.ok) console.warn('Telegram error:', data.description);
+  } catch (err) {
+    console.warn('Telegram send failed:', err);
+  }
+}
+
+// ─── COPY MESSAGE ────────────────────────────────────────────────
 function copyMsg() {
   const msg = document.getElementById('ig-msg-preview').textContent;
   navigator.clipboard.writeText(msg).then(() => {
@@ -157,7 +212,7 @@ function copyMsg() {
   });
 }
 
-// ─── SCROLL REVEAL ────────────────────────────────────────────
+// ─── SCROLL REVEAL ───────────────────────────────────────────────
 const revealObs = new IntersectionObserver((entries) => {
   entries.forEach(e => {
     if (e.isIntersecting) { e.target.classList.add('visible'); revealObs.unobserve(e.target); }
@@ -167,3 +222,48 @@ document.querySelectorAll('.reveal').forEach(el => revealObs.observe(el));
 
 renderCart();
 toggleDelivery();
+
+async function sendScreenshot() {
+  const fileInput = document.getElementById('screenshotUpload');
+  const statusEl = document.getElementById('uploadStatus');
+  const btn = document.getElementById('sendScreenshotBtn');
+
+  if (!fileInput.files[0]) {
+    statusEl.textContent = '⚠️ Please select a screenshot first.';
+    return;
+  }
+
+  btn.disabled = true;
+  btn.textContent = 'Sending...';
+  statusEl.textContent = '';
+
+  const formData = new FormData();
+  formData.append('chat_id', TELEGRAM_CHAT_ID);
+  formData.append('document', fileInput.files[0]);
+  formData.append('caption', `📸 Payment screenshot from ${customerData.name} (${customerData.contact})`);
+
+  try {
+    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`, {
+      method: 'POST',
+      body: formData
+    });
+
+    if (res.ok) {
+      statusEl.innerHTML = '✅ Order and screenshot sent successfully!';
+      btn.textContent = 'Sent ✓';
+    } else {
+      throw new Error('Failed');
+    }
+  } catch (e) {
+    statusEl.textContent = '❌ Failed to send. Please DM us on Instagram instead.';
+    btn.disabled = false;
+    btn.textContent = 'Send Screenshot to Us 📤';
+  }
+}
+
+function previewFile(input) {
+  const preview = document.getElementById('filePreview');
+  if (input.files[0]) {
+    preview.textContent = `✅ Selected: ${input.files[0].name}`;
+  }
+}
