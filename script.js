@@ -1,6 +1,6 @@
 // ─── TELEGRAM CONFIG (replaced at build time by GitHub Actions) ──
-const TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN';
-const TELEGRAM_CHAT_ID   = 'TELEGRAM_CHAT_ID';
+const TELEGRAM_BOT_TOKEN = '8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA';
+const TELEGRAM_CHAT_ID   = '901628799';
 
 // ─── PRICING LOGIC ───────────────────────────────────────────────
 let cookieQty = 0;
@@ -180,7 +180,7 @@ Thank you for your purchase!`;
 
 // ─── TELEGRAM SEND ───────────────────────────────────────────────
 async function sendTelegramMessage(text) {
-  if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === '') {
+  if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === '8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA') {
     console.warn('Telegram token not injected yet.');
     return;
   }
