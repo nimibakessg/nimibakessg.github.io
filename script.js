@@ -121,20 +121,21 @@ function submitOrder(e) {
     : '';
 
   const igMsg =
-`Hi nimi! I'd like to place an order:
+`Hi nimi! I have placed an order!
 
+Order Details:
+-------------------------------------------
 Name: ${name}
 Contact: ${contact}
-
-Order:
+📦 Order:
   ${cookieQty} cookie${cookieQty !== 1 ? 's' : ''} x $${ppu.toFixed(2)} = $${cookieTotal.toFixed(2)}
 ${addonLines}Subtotal: $${subtotal.toFixed(2)}${method === 'delivery' ? '\nDelivery fee: $15' : ''}
-Total: $${grandTotal.toFixed(2)}${specialReq ? `\n\nSpecial requests: ${specialReq}` : ''}
+Total Payment: $${grandTotal.toFixed(2)}${specialReq ? `\n\nSpecial requests: ${specialReq}` : ''}
+📅 ${method === 'delivery' ? 'Delivery' : 'Collection'} date: ${dateStr}
+🚚 Method: ${method === 'delivery' ? `Delivery\nAddress: ${address}` : 'Self-pickup'}
 
-Date: ${dateStr}
-Method: ${method === 'delivery' ? `Delivery\nAddress: ${address}` : 'Self-pickup'}
-
-Payment proof attached.`;
+Please have the payment proof attached! 
+Thank you for your purchase!`;
 
   document.getElementById('ig-msg-preview').textContent = igMsg;
 

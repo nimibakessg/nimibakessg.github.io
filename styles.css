@@ -759,3 +759,21 @@ footer a { color: var(--gold); text-decoration: none; }
   .addon-card { padding: 0.75rem 0.3rem; }
   .addon-img { width: 44px; height: 44px; }
 }
+
+.send-message-card {
+  background: linear-gradient(135deg, #fff8f0, #ffeedd);
+  border: 1.5px solid #e8c9a0;
+  border-radius: 14px;
+  padding: 14px 18px;
+  margin-top: 16px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.send-message {
+  font-size: 0.82rem;
+  color: #7a5c3a;
+  line-height: 1.5;
+  margin: 0;
+  font-style: italic;
+}
