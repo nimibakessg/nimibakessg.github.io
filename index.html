@@ -1,0 +1,720 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Dunes & Crumbs — Dubai Cookies</title>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,600;1,300&family=Tenor+Sans&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --gold: #c9a84c;
+      --sand: #f5ead8;
+      --dark: #1a1208;
+      --copper: #8b5e2a;
+      --cream: #fdf6ec;
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      background-color: var(--dark);
+      color: var(--sand);
+      font-family: 'Tenor Sans', sans-serif;
+      overflow-x: hidden;
+      cursor: none;
+    }
+
+    /* Custom cursor */
+    .cursor {
+      width: 12px; height: 12px;
+      background: var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9999;
+      transform: translate(-50%, -50%);
+      transition: transform 0.1s ease, width 0.2s ease, height 0.2s ease;
+    }
+    .cursor-ring {
+      width: 36px; height: 36px;
+      border: 1px solid var(--gold);
+      border-radius: 50%;
+      position: fixed;
+      pointer-events: none;
+      z-index: 9998;
+      transform: translate(-50%, -50%);
+      transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
+      opacity: 0.5;
+    }
+
+    /* Grain overlay */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none;
+      z-index: 100;
+      opacity: 0.3;
+    }
+
+    /* Hero */
+    header {
+      min-height: 100vh;
+      display: grid;
+      grid-template-rows: auto 1fr auto;
+      padding: 2.5rem 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse 80% 60% at 70% 50%, #3a2006 0%, var(--dark) 70%);
+      z-index: 0;
+    }
+
+    /* Decorative arc */
+    .hero-bg::after {
+      content: '';
+      position: absolute;
+      bottom: -20%;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120vw;
+      height: 60vw;
+      border-radius: 50%;
+      border: 1px solid rgba(201,168,76,0.15);
+    }
+
+    nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .logo {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 0.15em;
+      color: var(--gold);
+    }
+
+    nav ul {
+      display: flex;
+      gap: 2.5rem;
+      list-style: none;
+    }
+    nav ul a {
+      color: var(--sand);
+      text-decoration: none;
+      font-size: 0.75rem;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: opacity 0.3s;
+    }
+    nav ul a:hover { opacity: 1; color: var(--gold); }
+
+    .hero-center {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+
+    .eyebrow {
+      font-size: 0.7rem;
+      letter-spacing: 0.35em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1.5rem;
+      opacity: 0;
+      animation: fadeUp 0.8s 0.3s forwards;
+    }
+
+    h1 {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(4rem, 10vw, 9rem);
+      line-height: 0.95;
+      color: var(--cream);
+      opacity: 0;
+      animation: fadeUp 0.9s 0.5s forwards;
+    }
+    h1 em {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    .hero-sub {
+      margin-top: 2rem;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      color: var(--sand);
+      opacity: 0;
+      max-width: 360px;
+      line-height: 1.8;
+      animation: fadeUp 0.9s 0.7s forwards;
+    }
+
+    .hero-cta {
+      margin-top: 3rem;
+      opacity: 0;
+      animation: fadeUp 0.9s 0.9s forwards;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 1rem 2.8rem;
+      border: 1px solid var(--gold);
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      transition: background 0.3s, color 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+    .btn::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.35s ease;
+      z-index: -1;
+    }
+    .btn:hover { color: var(--dark); }
+    .btn:hover::before { transform: scaleX(1); }
+
+    .hero-scroll {
+      align-self: end;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+      padding-bottom: 0.5rem;
+      opacity: 0;
+      animation: fadeUp 1s 1.2s forwards;
+    }
+    .hero-scroll span {
+      display: block;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--sand);
+      opacity: 0.5;
+      margin-bottom: 0.75rem;
+    }
+    .scroll-line {
+      width: 1px;
+      height: 50px;
+      background: linear-gradient(to bottom, var(--gold), transparent);
+      margin: 0 auto;
+      animation: pulse 2s infinite;
+    }
+
+    /* Products section */
+    section.products {
+      padding: 8rem 3rem;
+      position: relative;
+    }
+
+    .section-label {
+      font-size: 0.7rem;
+      letter-spacing: 0.3em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 1rem;
+    }
+
+    .section-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-weight: 300;
+      font-size: clamp(2.5rem, 5vw, 4.5rem);
+      line-height: 1.1;
+      color: var(--cream);
+      max-width: 600px;
+      margin-bottom: 5rem;
+    }
+
+    .products-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 1.5px;
+    }
+
+    .product-card {
+      background: #261a0a;
+      padding: 3rem 2.5rem;
+      position: relative;
+      overflow: hidden;
+      transition: background 0.4s;
+    }
+    .product-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 2px;
+      background: var(--gold);
+      transform: scaleX(0);
+      transform-origin: left;
+      transition: transform 0.5s ease;
+    }
+    .product-card:hover { background: #2e1e0b; }
+    .product-card:hover::before { transform: scaleX(1); }
+
+    .card-number {
+      font-size: 0.65rem;
+      letter-spacing: 0.3em;
+      color: var(--gold);
+      opacity: 0.6;
+      margin-bottom: 2rem;
+    }
+
+    .card-emoji {
+      font-size: 3rem;
+      margin-bottom: 1.5rem;
+      display: block;
+    }
+
+    .card-title {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.8rem;
+      font-weight: 300;
+      color: var(--cream);
+      margin-bottom: 0.75rem;
+    }
+
+    .card-desc {
+      font-size: 0.8rem;
+      line-height: 1.9;
+      color: var(--sand);
+      opacity: 0.65;
+      margin-bottom: 2rem;
+    }
+
+    .card-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.6rem;
+      color: var(--gold);
+    }
+
+    .card-price small {
+      font-family: 'Tenor Sans', sans-serif;
+      font-size: 0.7rem;
+      color: var(--sand);
+      opacity: 0.5;
+      margin-left: 0.4rem;
+    }
+
+    .add-btn {
+      margin-top: 1.5rem;
+      display: inline-block;
+      font-size: 0.65rem;
+      letter-spacing: 0.25em;
+      text-transform: uppercase;
+      color: var(--sand);
+      opacity: 0.5;
+      border-bottom: 1px solid rgba(245,234,216,0.3);
+      padding-bottom: 2px;
+      cursor: pointer;
+      transition: opacity 0.3s, color 0.3s;
+      background: none;
+      border-top: none;
+      border-left: none;
+      border-right: none;
+    }
+    .add-btn:hover { opacity: 1; color: var(--gold); border-color: var(--gold); }
+
+    /* Story section */
+    section.story {
+      padding: 8rem 3rem;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6rem;
+      align-items: center;
+      background: #0f0b05;
+    }
+
+    .story-text .section-label { margin-bottom: 1.5rem; }
+
+    .story-text h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2rem, 4vw, 3.5rem);
+      font-weight: 300;
+      color: var(--cream);
+      line-height: 1.2;
+      margin-bottom: 2rem;
+    }
+
+    .story-text p {
+      font-size: 0.85rem;
+      line-height: 2;
+      color: var(--sand);
+      opacity: 0.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .story-visual {
+      position: relative;
+      height: 480px;
+    }
+
+    .story-visual-inner {
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 40% 40%, #5a3310 0%, #1a1208 70%);
+      border: 1px solid rgba(201,168,76,0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 8rem;
+    }
+
+    .story-visual-inner::before {
+      content: '';
+      position: absolute;
+      inset: 16px;
+      border: 1px solid rgba(201,168,76,0.08);
+    }
+
+    /* Testimonials */
+    section.testimonials {
+      padding: 8rem 3rem;
+      text-align: center;
+    }
+
+    .testimonials-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 2rem;
+      margin-top: 4rem;
+    }
+
+    .testimonial {
+      padding: 2.5rem;
+      border: 1px solid rgba(201,168,76,0.12);
+      text-align: left;
+      transition: border-color 0.3s;
+    }
+    .testimonial:hover { border-color: rgba(201,168,76,0.4); }
+
+    .stars {
+      color: var(--gold);
+      letter-spacing: 0.1em;
+      margin-bottom: 1.2rem;
+      font-size: 0.8rem;
+    }
+
+    .testimonial blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1.15rem;
+      color: var(--cream);
+      line-height: 1.7;
+      margin-bottom: 1.5rem;
+    }
+
+    .testimonial cite {
+      font-size: 0.7rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.7;
+    }
+
+    /* CTA Banner */
+    section.cta-banner {
+      padding: 7rem 3rem;
+      background: linear-gradient(135deg, #3a2006 0%, #1a1208 50%, #261405 100%);
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    section.cta-banner::before {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      border: 1px solid rgba(201,168,76,0.1);
+    }
+    section.cta-banner::after {
+      content: '';
+      position: absolute;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      width: 900px; height: 900px;
+      border-radius: 50%;
+      border: 1px solid rgba(201,168,76,0.05);
+    }
+
+    .cta-banner h2 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(2.5rem, 6vw, 5rem);
+      font-weight: 300;
+      color: var(--cream);
+      margin-bottom: 1.5rem;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-banner h2 em { color: var(--gold); font-style: italic; }
+    .cta-banner p {
+      font-size: 0.85rem;
+      color: var(--sand);
+      opacity: 0.6;
+      margin-bottom: 3rem;
+      position: relative;
+      z-index: 1;
+    }
+    .cta-banner .btn { position: relative; z-index: 1; }
+
+    /* Footer */
+    footer {
+      padding: 3rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid rgba(201,168,76,0.1);
+    }
+    footer .logo { font-size: 1.1rem; }
+    footer p {
+      font-size: 0.7rem;
+      color: var(--sand);
+      opacity: 0.3;
+      letter-spacing: 0.1em;
+    }
+
+    /* Animations */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(20px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
+
+    /* Intersection observer fade */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.8s ease, transform 0.8s ease;
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (max-width: 768px) {
+      header, section.products, section.story, section.testimonials, section.cta-banner, footer {
+        padding-left: 1.5rem;
+        padding-right: 1.5rem;
+      }
+      nav ul { display: none; }
+      section.story { grid-template-columns: 1fr; gap: 3rem; }
+      .story-visual { height: 280px; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="cursor" id="cursor"></div>
+  <div class="cursor-ring" id="cursorRing"></div>
+
+  <!-- HEADER -->
+  <header>
+    <div class="hero-bg"></div>
+
+    <nav>
+      <div class="logo">Dunes &amp; Crumbs</div>
+      <ul>
+        <li><a href="#flavors">Flavours</a></li>
+        <li><a href="#story">Our Story</a></li>
+        <li><a href="#order">Order</a></li>
+      </ul>
+    </nav>
+
+    <div class="hero-center">
+      <p class="eyebrow">Handcrafted in Dubai · Shipped Worldwide</p>
+      <h1>Taste the<br/><em>Desert</em></h1>
+      <p class="hero-sub">Luxury cookies inspired by the flavours, spices, and spirit of Dubai. Every bite is a journey.</p>
+      <div class="hero-cta">
+        <a href="#flavors" class="btn">Explore Flavours</a>
+      </div>
+    </div>
+
+    <div class="hero-scroll">
+      <span>Scroll</span>
+      <div class="scroll-line"></div>
+    </div>
+  </header>
+
+  <!-- PRODUCTS -->
+  <section class="products" id="flavors">
+    <p class="section-label reveal">Our Collection</p>
+    <h2 class="section-title reveal">Signature <em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold)">Dubai</em> Cookies</h2>
+
+    <div class="products-grid">
+
+      <div class="product-card reveal">
+        <p class="card-number">01</p>
+        <span class="card-emoji">🍫</span>
+        <h3 class="card-title">Dubai Chocolate</h3>
+        <p class="card-desc">The iconic viral sensation — milk chocolate shell filled with pistachio cream and crispy kataifi.</p>
+        <div class="card-price">AED 45 <small>/ box of 6</small></div>
+        <button class="add-btn">Add to Cart →</button>
+      </div>
+
+      <div class="product-card reveal">
+        <p class="card-number">02</p>
+        <span class="card-emoji">🌹</span>
+        <h3 class="card-title">Saffron &amp; Rose</h3>
+        <p class="card-desc">Delicate shortbread infused with Persian saffron, rose water, and crushed pistachios.</p>
+        <div class="card-price">AED 40 <small>/ box of 6</small></div>
+        <button class="add-btn">Add to Cart →</button>
+      </div>
+
+      <div class="product-card reveal">
+        <p class="card-number">03</p>
+        <span class="card-emoji">🌴</span>
+        <h3 class="card-title">Medjool Date</h3>
+        <p class="card-desc">Soft, chewy cookie centers filled with premium Medjool date paste and a hint of cardamom.</p>
+        <div class="card-price">AED 38 <small>/ box of 6</small></div>
+        <button class="add-btn">Add to Cart →</button>
+      </div>
+
+      <div class="product-card reveal">
+        <p class="card-number">04</p>
+        <span class="card-emoji">☕</span>
+        <h3 class="card-title">Karak Chai</h3>
+        <p class="card-desc">Warm spiced tea cookie with notes of black tea, ginger, cinnamon, and cardamom glaze.</p>
+        <div class="card-price">AED 38 <small>/ box of 6</small></div>
+        <button class="add-btn">Add to Cart →</button>
+      </div>
+
+      <div class="product-card reveal">
+        <p class="card-number">05</p>
+        <span class="card-emoji">🥜</span>
+        <h3 class="card-title">Pistachio Kunafa</h3>
+        <p class="card-desc">Inspired by the classic kunafa — shredded phyllo, sweet cheese cream, and pistachio dust.</p>
+        <div class="card-price">AED 48 <small>/ box of 6</small></div>
+        <button class="add-btn">Add to Cart →</button>
+      </div>
+
+      <div class="product-card reveal">
+        <p class="card-number">06</p>
+        <span class="card-emoji">✨</span>
+        <h3 class="card-title">Gold Discovery Box</h3>
+        <p class="card-desc">All five signature flavours in one luxuriously gift-wrapped box. Perfect for gifting.</p>
+        <div class="card-price">AED 99 <small>/ box of 30</small></div>
+        <button class="add-btn">Add to Cart →</button>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- STORY -->
+  <section class="story" id="story">
+    <div class="story-text">
+      <p class="section-label reveal">The Story</p>
+      <h2 class="reveal">Born from the heart of the<br/><em style="font-family:'Cormorant Garamond',serif;font-style:italic;color:var(--gold)">Golden City</em></h2>
+      <p class="reveal">Our cookies are crafted in small batches using the finest local ingredients — Emirati dates, Iranian saffron, Lebanese pistachios, and the beloved kataifi pastry found throughout the souks of Deira.</p>
+      <p class="reveal">Each recipe honours the vibrant culinary heritage of Dubai, reinterpreted through the lens of modern artisan baking. No preservatives. No shortcuts. Just pure, golden flavour.</p>
+      <a href="#order" class="btn reveal" style="margin-top:1rem;">Order Now</a>
+    </div>
+    <div class="story-visual reveal">
+      <div class="story-visual-inner">🍪</div>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="testimonials">
+    <p class="section-label reveal">What People Say</p>
+    <h2 class="section-title reveal" style="margin: 0 auto; text-align:center;">Loved Across the Emirates</h2>
+
+    <div class="testimonials-grid">
+      <div class="testimonial reveal">
+        <div class="stars">★★★★★</div>
+        <blockquote>"The Dubai Chocolate cookie is unlike anything I've ever tasted. The kataifi crunch is absolutely divine."</blockquote>
+        <cite>— Sara A., Dubai Marina</cite>
+      </div>
+      <div class="testimonial reveal">
+        <div class="stars">★★★★★</div>
+        <blockquote>"I ordered the Gold Discovery Box for Eid gifts. Everyone was blown away. Already reordered twice."</blockquote>
+        <cite>— Mohammed K., Abu Dhabi</cite>
+      </div>
+      <div class="testimonial reveal">
+        <div class="stars">★★★★★</div>
+        <blockquote>"The Saffron &amp; Rose shortbread is so beautifully delicate. I can taste the quality in every crumb."</blockquote>
+        <cite>— Priya R., DIFC</cite>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA BANNER -->
+  <section class="cta-banner" id="order">
+    <h2>Order Your <em>Box</em><br/>of Gold Today</h2>
+    <p>Free delivery within Dubai · International shipping available</p>
+    <a href="mailto:order@dunesandcrumbs.com" class="btn">Place Your Order</a>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="logo">Dunes &amp; Crumbs</div>
+    <p>© 2025 Dunes &amp; Crumbs · Dubai, UAE</p>
+  </footer>
+
+  <script>
+    // Custom cursor
+    const cursor = document.getElementById('cursor');
+    const ring = document.getElementById('cursorRing');
+    document.addEventListener('mousemove', e => {
+      cursor.style.left = e.clientX + 'px';
+      cursor.style.top = e.clientY + 'px';
+      setTimeout(() => {
+        ring.style.left = e.clientX + 'px';
+        ring.style.top = e.clientY + 'px';
+      }, 80);
+    });
+    document.querySelectorAll('a, button').forEach(el => {
+      el.addEventListener('mouseenter', () => { cursor.style.width = '6px'; cursor.style.height = '6px'; ring.style.width = '48px'; ring.style.height = '48px'; });
+      el.addEventListener('mouseleave', () => { cursor.style.width = '12px'; cursor.style.height = '12px'; ring.style.width = '36px'; ring.style.height = '36px'; });
+    });
+
+    // Reveal on scroll
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+          setTimeout(() => e.target.classList.add('visible'), i * 80);
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+
+    // Add to cart feedback
+    document.querySelectorAll('.add-btn').forEach(btn => {
+      btn.addEventListener('click', function() {
+        const orig = this.textContent;
+        this.textContent = 'Added ✓';
+        this.style.color = 'var(--gold)';
+        this.style.borderColor = 'var(--gold)';
+        this.style.opacity = '1';
+        setTimeout(() => { this.textContent = orig; this.style.color = ''; this.style.borderColor = ''; this.style.opacity = ''; }, 1800);
+      });
+    });
+  </script>
+</body>
+</html>
