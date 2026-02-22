@@ -2,6 +2,8 @@
 const TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN';
 const TELEGRAM_CHAT_ID   = 'TELEGRAM_CHAT_ID';
 
+const SOLD_OUT = false;
+
 // ─── PRICING LOGIC ───────────────────────────────────────────────
 let cookieQty = 0;
 let customerData = {};
@@ -153,32 +155,6 @@ Thank you for your purchase!`;
   goToStep('payment');
 }
 
-// ─── TELEGRAM SEND ───────────────────────────────────────────────
-async function sendTelegramMessage(text) {
-  if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === '__TELEGRAM_BOT_TOKEN__') {
-    console.warn('Telegram token not injected yet.');
-    return;
-  }
-  try {
-    const res = await fetch(
-      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
-          text,
-          parse_mode: 'Markdown',
-        }),
-      }
-    );
-    const data = await res.json();
-    if (!data.ok) console.warn('Telegram error:', data.description);
-  } catch (err) {
-    console.warn('Telegram send failed:', err);
-  }
-}
-
 // ─── COPY MESSAGE ────────────────────────────────────────────────
 function copyMsg() {
   const msg = document.getElementById('ig-msg-preview').textContent;
@@ -244,4 +220,16 @@ function previewFile(input) {
   if (input.files[0]) {
     preview.textContent = `✅ Selected: ${input.files[0].name}`;
   }
+}
+
+if (SOLD_OUT) {
+  const btn = document.querySelector('.btn-main');
+  btn.disabled = true;
+  btn.textContent = 'Sold Out';
+  btn.style.pointerEvents = 'none';
+
+  const notice = document.createElement('p');
+  notice.textContent = 'Sorry, we are currently sold out on ALL dates. Follow our tiktok @nimi.sg to stay updated on preorder releases! 🍪';
+  notice.style.cssText = 'text-align:center; color:var(--cocoa); font-size:0.85rem; margin-top:0.5rem; opacity:0.8;';
+  btn.insertAdjacentElement('afterend', notice);
 }
