@@ -150,31 +150,6 @@ Thank you for your purchase!`;
     window.open('https://ig.me/m/nimi.sg_', '_blank');
   };
 
-  // ── Telegram notification ─────────────────────────────────────
-  const timestamp  = new Date().toLocaleString('en-SG', { timeZone: 'Asia/Singapore' });
-  const addonNames = addons.length > 0 ? addons.map(a => a.name).join(', ') : 'None';
-
-  const tgLines = [
-    `🍪 *New nimi Order!*`,
-    ``,
-    `🕐 *Time:* ${timestamp}`,
-    `👤 *Name:* ${name}`,
-    `📞 *Contact:* ${contact}`,
-    `📅 *Date:* ${dateStr}`,
-    `📦 *Method:* ${method === 'delivery' ? 'Delivery' : 'Self-pickup'}`,
-    address ? `📍 *Address:* ${address}` : null,
-    ``,
-    `🛒 *Cookies:* ${cookieQty} × $${ppu.toFixed(2)} = $${cookieTotal.toFixed(2)}`,
-    addonNames !== 'None' ? `🎁 *Add-ons:* ${addonNames} = $${addonTotal}` : null,
-    ``,
-    `💰 *Subtotal:* $${subtotal.toFixed(2)}`,
-    method === 'delivery' ? `🚚 *Delivery:* $15` : null,
-    `✅ *Total: $${grandTotal.toFixed(2)}*`,
-    specialReq ? `\n📝 *Special requests:* ${specialReq}` : null,
-  ].filter(l => l !== null).join('\n');
-
-  sendTelegramMessage(tgLines);
-
   goToStep('payment');
 }
 
