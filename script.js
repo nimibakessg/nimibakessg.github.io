@@ -1,6 +1,6 @@
 // ─── TELEGRAM CONFIG (replaced at build time by GitHub Actions) ──
-const TELEGRAM_BOT_TOKEN = '8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA';
-const TELEGRAM_CHAT_ID   = '901628799';
+const 8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA = '8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA';
+const 901628799   = '901628799';
 
 // ─── PRICING LOGIC ───────────────────────────────────────────────
 let cookieQty = 0;
@@ -180,18 +180,18 @@ Thank you for your purchase!`;
 
 // ─── TELEGRAM SEND ───────────────────────────────────────────────
 async function sendTelegramMessage(text) {
-  if (!TELEGRAM_BOT_TOKEN || TELEGRAM_BOT_TOKEN === '8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA') {
+  if (!8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA || 8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA === '__8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA__') {
     console.warn('Telegram token not injected yet.');
     return;
   }
   try {
     const res = await fetch(
-      `https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendMessage`,
+      `https://api.telegram.org/bot${8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA}/sendMessage`,
       {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          chat_id: TELEGRAM_CHAT_ID,
+          chat_id: 901628799,
           text,
           parse_mode: 'Markdown',
         }),
@@ -241,12 +241,12 @@ async function sendScreenshot() {
   statusEl.textContent = '';
 
   const formData = new FormData();
-  formData.append('chat_id', TELEGRAM_CHAT_ID);
+  formData.append('chat_id', 901628799);
   formData.append('document', fileInput.files[0]);
   formData.append('caption', `📸 Payment screenshot from ${customerData.name} (${customerData.contact})`);
 
   try {
-    const res = await fetch(`https://api.telegram.org/bot${TELEGRAM_BOT_TOKEN}/sendDocument`, {
+    const res = await fetch(`https://api.telegram.org/bot${8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA}/sendDocument`, {
       method: 'POST',
       body: formData
     });
