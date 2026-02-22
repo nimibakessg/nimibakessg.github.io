@@ -1,6 +1,6 @@
 // ─── TELEGRAM CONFIG (replaced at build time by GitHub Actions) ──
-const TELEGRAM_BOT_TOKEN = '__TELEGRAM_BOT_TOKEN__';
-const TELEGRAM_CHAT_ID   = '__TELEGRAM_CHAT_ID__';
+const TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN';
+const TELEGRAM_CHAT_ID   = 'TELEGRAM_CHAT_ID';
 
 // ─── PRICING LOGIC ───────────────────────────────────────────────
 let cookieQty = 0;

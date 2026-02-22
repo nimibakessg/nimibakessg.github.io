@@ -12,8 +12,8 @@ jobs:
 
       - name: Inject Telegram secrets into script.js
         run: |
-          sed -i "s|__TELEGRAM_BOT_TOKEN__|${{ secrets.TELEGRAM_BOT_TOKEN }}|g" script.js
-          sed -i "s|__TELEGRAM_CHAT_ID__|${{ secrets.TELEGRAM_CHAT_ID }}|g" script.js
+          sed -i "s|TELEGRAM_BOT_TOKEN|${{ secrets.TELEGRAM_BOT_TOKEN }}|g" script.js
+          sed -i "s|TELEGRAM_CHAT_ID|${{ secrets.TELEGRAM_CHAT_ID }}|g" script.js
 
       - name: Deploy to GitHub Pages
         uses: peaceiris/actions-gh-pages@v3
