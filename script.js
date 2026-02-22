@@ -2,6 +2,8 @@
 const 8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA = '8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA';
 const 901628799   = '901628799';
 
+const SOLD_OUT = false;
+
 // ─── PRICING LOGIC ───────────────────────────────────────────────
 let cookieQty = 0;
 let customerData = {};
@@ -153,32 +155,6 @@ Thank you for your purchase!`;
   goToStep('payment');
 }
 
-// ─── TELEGRAM SEND ───────────────────────────────────────────────
-async function sendTelegramMessage(text) {
-  if (!8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA || 8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA === '__8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA__') {
-    console.warn('Telegram token not injected yet.');
-    return;
-  }
-  try {
-    const res = await fetch(
-      `https://api.telegram.org/bot${8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA}/sendMessage`,
-      {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          chat_id: 901628799,
-          text,
-          parse_mode: 'Markdown',
-        }),
-      }
-    );
-    const data = await res.json();
-    if (!data.ok) console.warn('Telegram error:', data.description);
-  } catch (err) {
-    console.warn('Telegram send failed:', err);
-  }
-}
-
 // ─── COPY MESSAGE ────────────────────────────────────────────────
 function copyMsg() {
   const msg = document.getElementById('ig-msg-preview').textContent;
@@ -244,4 +220,16 @@ function previewFile(input) {
   if (input.files[0]) {
     preview.textContent = `✅ Selected: ${input.files[0].name}`;
   }
+}
+
+if (SOLD_OUT) {
+  const btn = document.querySelector('.btn-main');
+  btn.disabled = true;
+  btn.textContent = 'Sold Out';
+  btn.style.pointerEvents = 'none';
+
+  const notice = document.createElement('p');
+  notice.textContent = 'Sorry, we are currently sold out on ALL dates. Follow our tiktok @nimi.sg to stay updated on preorder releases! 🍪';
+  notice.style.cssText = 'text-align:center; color:var(--cocoa); font-size:0.85rem; margin-top:0.5rem; opacity:0.8;';
+  btn.insertAdjacentElement('afterend', notice);
 }
