@@ -2,7 +2,7 @@
 const 8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA = '8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA';
 const 901628799   = '901628799';
 
-const SOLD_OUT = false;
+const SOLD_OUT = true;
 
 // ─── PRICING LOGIC ───────────────────────────────────────────────
 let cookieQty = 0;
