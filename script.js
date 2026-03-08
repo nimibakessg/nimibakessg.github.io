@@ -2,7 +2,7 @@
 const TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN';
 const TELEGRAM_CHAT_ID   = 'TELEGRAM_CHAT_ID';
 
-const SOLD_OUT = true;
+const SOLD_OUT = false;
 
 // ─── STATE ────────────────────────────────────────────────────────
 let cookieQty = 0;
