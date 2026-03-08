@@ -1012,27 +1012,6 @@ footer a { color: var(--gold); text-decoration: none; }
   display: block;
 }
 
-/* Leche flan placeholder */
-.product-img-flan {
-  background: linear-gradient(145deg, #c27a30 0%, #8b4513 40%, #5c2e0f 100%);
-}
-.flan-placeholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  opacity: 0.7;
-}
-.flan-emoji { font-size: 3.5rem; }
-.flan-label {
-  font-family: 'Playfair Display', serif;
-  font-size: 1.1rem;
-  color: rgba(253,246,236,0.9);
-  letter-spacing: 0.05em;
-}
 
 .product-section-body {
   padding: 1.4rem 1.8rem 1.5rem;
