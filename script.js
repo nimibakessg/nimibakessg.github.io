@@ -4,10 +4,13 @@ const TELEGRAM_CHAT_ID   = 'TELEGRAM_CHAT_ID';
 
 const SOLD_OUT = true;
 
-// ─── PRICING LOGIC ───────────────────────────────────────────────
+// ─── STATE ────────────────────────────────────────────────────────
 let cookieQty = 0;
+let flanQty = 0;
+let bouquetInCart = false;
 let customerData = {};
 
+// ─── PRICING ──────────────────────────────────────────────────────
 function pricePerCookie(qty) {
   if (qty <= 0) return 0;
   if (qty === 1) return 6.00;
@@ -15,6 +18,14 @@ function pricePerCookie(qty) {
   return 5.00;
 }
 
+const FLAN_PRICE = 3.00;
+
+function bouquetPrice() {
+  // $15 if any food item is in cart, otherwise $30
+  return (cookieQty > 0 || flanQty > 0) ? 15 : 30;
+}
+
+// ─── QUANTITY UPDATES ─────────────────────────────────────────────
 function updateQty(delta) {
   cookieQty = Math.max(0, cookieQty + delta);
   document.getElementById('cookie-qty').value = cookieQty;
@@ -26,47 +37,98 @@ function updateQtyFromInput(val) {
   renderCart();
 }
 
-function handleFairyLights(checkbox) {
-  const bouquetChecked = document.querySelector('input[value="Rose Bouquet"]').checked;
-  if (checkbox.checked && !bouquetChecked) {
-    checkbox.checked = false;
-    const card = document.getElementById('fairy-card');
-    card.style.borderColor = 'var(--gold)';
-    card.querySelector('.addon-price').textContent = '⚠️ Add bouquet first';
-    setTimeout(() => {
-      card.style.borderColor = '';
-      card.querySelector('.addon-price').textContent = '+$5 (with bouquet)';
-    }, 2000);
-    return;
+function updateFlanQty(delta) {
+  flanQty = Math.max(0, flanQty + delta);
+  document.getElementById('flan-qty').value = flanQty;
+  renderCart();
+}
+
+function updateFlanQtyFromInput(val) {
+  flanQty = Math.max(0, parseInt(val) || 0);
+  renderCart();
+}
+
+function toggleBouquet() {
+  bouquetInCart = document.getElementById('bouquet-toggle').checked;
+  const addons = document.getElementById('bouquet-addons');
+  addons.style.display = bouquetInCart ? 'block' : 'none';
+  if (!bouquetInCart) {
+    document.querySelectorAll('input[name="bouquet-addon"]').forEach(el => el.checked = false);
+    const wrap = document.getElementById('postcard-note-wrap');
+    if (wrap) wrap.style.display = 'none';
   }
   renderCart();
 }
 
-function getAddons() {
-  return Array.from(document.querySelectorAll('input[name="addon"]:checked')).map(el => ({
+function togglePostcard(checkbox) {
+  const wrap = document.getElementById('postcard-note-wrap');
+  if (wrap) wrap.style.display = checkbox.checked ? 'block' : 'none';
+}
+
+// ─── ADD-ONS ──────────────────────────────────────────────────────
+function getCookieAddons() {
+  return Array.from(document.querySelectorAll('input[name="cookie-addon"]:checked')).map(el => ({
     name: el.value,
     price: parseInt(el.dataset.price),
   }));
 }
 
-function renderCart() {
-  const ppu = pricePerCookie(cookieQty);
-  const cookieTotal = Math.round(ppu * cookieQty * 100) / 100;
-  const addons = getAddons();
-  const addonTotal = addons.reduce((sum, a) => sum + a.price, 0);
-  const grand = cookieTotal + addonTotal;
+function getFlanAddons() {
+  return Array.from(document.querySelectorAll('input[name="flan-addon"]:checked')).map(el => ({
+    name: el.value,
+    price: parseInt(el.dataset.price),
+  }));
+}
 
+function getBouquetAddons() {
+  return Array.from(document.querySelectorAll('input[name="bouquet-addon"]:checked')).map(el => ({
+    name: el.value,
+    price: parseInt(el.dataset.price),
+  }));
+}
+
+// ─── CART RENDER ──────────────────────────────────────────────────
+function renderCart() {
+  // Cookie pricing hint
   const hint = document.getElementById('price-hint');
-  if (cookieQty === 0) hint.textContent = 'Price adjusts automatically';
-  else if (cookieQty === 1) hint.textContent = '$6.00 each';
-  else if (cookieQty <= 3) hint.textContent = `$5.50 each · $${cookieTotal.toFixed(2)} total`;
-  else hint.textContent = `$5.00 each · $${cookieTotal.toFixed(2)} total`;
+  if (hint) {
+    const ppu = pricePerCookie(cookieQty);
+    if (cookieQty === 0) hint.textContent = 'Price adjusts automatically';
+    else if (cookieQty === 1) hint.textContent = '$6.00 each';
+    else if (cookieQty <= 3) hint.textContent = `$5.50 each · $${(5.50 * cookieQty).toFixed(2)} total`;
+    else hint.textContent = `$5.00 each · $${(5.00 * cookieQty).toFixed(2)} total`;
+  }
+
+  // Update bouquet price display
+  const bouquetPriceEl = document.getElementById('bouquet-price-display');
+  if (bouquetPriceEl) {
+    if (cookieQty > 0 || flanQty > 0) {
+      bouquetPriceEl.innerHTML = '<span class="price-sale">$15</span> <span class="price-discount-note">food item discount applied ✓</span>';
+    } else {
+      bouquetPriceEl.innerHTML = '<span class="price-current">$30</span> <span class="price-discount-note">(or $15 when bought with food)</span>';
+    }
+  }
 
   const summary = document.getElementById('cart-summary');
   const btn = document.getElementById('checkout-btn');
 
+  const ppu = pricePerCookie(cookieQty);
+  const cookieTotal = Math.round(ppu * cookieQty * 100) / 100;
+  const cookieAddons = getCookieAddons();
+  const cookieAddonTotal = cookieAddons.reduce((sum, a) => sum + a.price, 0);
+
+  const flanTotal = flanQty * FLAN_PRICE;
+  const flanAddons = getFlanAddons();
+  const flanAddonTotal = flanAddons.reduce((sum, a) => sum + a.price, 0);
+
+  const bPrice = bouquetInCart ? bouquetPrice() : 0;
+  const bouquetAddons = bouquetInCart ? getBouquetAddons() : [];
+  const bouquetAddonTotal = bouquetAddons.reduce((sum, a) => sum + a.price, 0);
+
+  const grand = cookieTotal + cookieAddonTotal + flanTotal + flanAddonTotal + bPrice + bouquetAddonTotal;
+
   if (grand === 0) {
-    summary.innerHTML = '<span class="cart-empty">Add cookies above to get started</span>';
+    summary.innerHTML = '<span class="cart-empty">Add items above to get started</span>';
     btn.disabled = true;
     return;
   }
@@ -74,15 +136,30 @@ function renderCart() {
   let lines = '';
   if (cookieQty > 0) {
     lines += `<span>${cookieQty} cookie${cookieQty > 1 ? 's' : ''} × $${ppu.toFixed(2)} <strong>$${cookieTotal.toFixed(2)}</strong></span>`;
+    cookieAddons.forEach(a => {
+      lines += `<span>${a.name} (cookies) <strong>+$${a.price}</strong></span>`;
+    });
   }
-  addons.forEach(a => {
-    lines += `<span>${a.name} <strong>+$${a.price}</strong></span>`;
-  });
+  if (flanQty > 0) {
+    lines += `<span>${flanQty} leche flan${flanQty > 1 ? 's' : ''} × $${FLAN_PRICE.toFixed(2)} <strong>$${flanTotal.toFixed(2)}</strong></span>`;
+    flanAddons.forEach(a => {
+      lines += `<span>${a.name} (flan) <strong>+$${a.price}</strong></span>`;
+    });
+  }
+  if (bouquetInCart) {
+    const discountNote = bPrice === 15 ? ' <em style="font-size:0.7rem;color:var(--pistachio)">food discount</em>' : '';
+    lines += `<span>Rose Bouquet${discountNote} <strong>$${bPrice}</strong></span>`;
+    bouquetAddons.forEach(a => {
+      const priceStr = a.price === 0 ? 'Free' : `+$${a.price}`;
+      lines += `<span>${a.name} (bouquet) <strong>${priceStr}</strong></span>`;
+    });
+  }
 
+  const itemCount = cookieQty + flanQty + (bouquetInCart ? 1 : 0);
   summary.innerHTML = `
     ${lines}
     <div class="cart-divider"></div>
-    <span class="cart-total">${cookieQty} cookie${cookieQty !== 1 ? 's' : ''} · <strong>$${grand.toFixed(2)} total</strong></span>
+    <span class="cart-total">${itemCount} item${itemCount !== 1 ? 's' : ''} · <strong>$${grand.toFixed(2)} total</strong></span>
   `;
   btn.disabled = false;
 }
@@ -110,11 +187,21 @@ function submitOrder(e) {
   const address    = method === 'delivery' ? form.address.value.trim() : null;
   const specialReq = document.getElementById('special-req').value.trim();
 
-  const ppu         = pricePerCookie(cookieQty);
-  const cookieTotal = Math.round(ppu * cookieQty * 100) / 100;
-  const addons      = getAddons();
-  const addonTotal  = addons.reduce((sum, a) => sum + a.price, 0);
-  const subtotal    = cookieTotal + addonTotal;
+  const ppu          = pricePerCookie(cookieQty);
+  const cookieTotal  = Math.round(ppu * cookieQty * 100) / 100;
+  const cookieAddons = getCookieAddons();
+  const cookieAddonTotal = cookieAddons.reduce((sum, a) => sum + a.price, 0);
+
+  const flanTotal  = flanQty * FLAN_PRICE;
+  const flanAddons = getFlanAddons();
+  const flanAddonTotal = flanAddons.reduce((sum, a) => sum + a.price, 0);
+
+  const bPrice        = bouquetInCart ? bouquetPrice() : 0;
+  const bouquetAddons = bouquetInCart ? getBouquetAddons() : [];
+  const bouquetAddonTotal = bouquetAddons.reduce((sum, a) => sum + a.price, 0);
+  const postcardNote  = bouquetInCart ? (document.getElementById('postcard-note') ? document.getElementById('postcard-note').value.trim() : '') : '';
+
+  const subtotal   = cookieTotal + cookieAddonTotal + flanTotal + flanAddonTotal + bPrice + bouquetAddonTotal;
   const deliveryFee = method === 'delivery' ? 15 : 0;
   const grandTotal  = subtotal + deliveryFee;
 
@@ -124,11 +211,25 @@ function submitOrder(e) {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
 
-  let addonLines = addons.length > 0
-    ? addons.map(a => `  + ${a.name} = $${a.price}`).join('\n') + '\n'
-    : '';
+  let orderLines = '';
+  if (cookieQty > 0) {
+    orderLines += `  ${cookieQty} Dubai Chewy Cookie${cookieQty > 1 ? 's' : ''} x $${ppu.toFixed(2)} = $${cookieTotal.toFixed(2)}\n`;
+    cookieAddons.forEach(a => { orderLines += `    + ${a.name} = $${a.price}\n`; });
+  }
+  if (flanQty > 0) {
+    orderLines += `  ${flanQty} Leche Flan${flanQty > 1 ? 's' : ''} x $${FLAN_PRICE.toFixed(2)} = $${flanTotal.toFixed(2)}\n`;
+    flanAddons.forEach(a => { orderLines += `    + ${a.name} = $${a.price}\n`; });
+  }
+  if (bouquetInCart) {
+    const discountNote = bPrice === 15 ? ' (food item discount applied)' : '';
+    orderLines += `  Rose Bouquet = $${bPrice}${discountNote}\n`;
+    bouquetAddons.forEach(a => {
+      const priceStr = a.price === 0 ? 'free' : `$${a.price}`;
+      orderLines += `    + ${a.name} = ${priceStr}\n`;
+    });
+    if (postcardNote) orderLines += `    Postcard message: "${postcardNote}"\n`;
+  }
 
-  // ── Instagram message ─────────────────────────────────────────
   const igMsg =
 `Hi nimi! I have placed an order!
 
@@ -137,8 +238,7 @@ Order Details:
 Name: ${name}
 Contact: ${contact}
 📦 Order:
-  ${cookieQty} cookie${cookieQty !== 1 ? 's' : ''} x $${ppu.toFixed(2)} = $${cookieTotal.toFixed(2)}
-${addonLines}Subtotal: $${subtotal.toFixed(2)}${method === 'delivery' ? '\nDelivery fee: $15' : ''}
+${orderLines}Subtotal: $${subtotal.toFixed(2)}${method === 'delivery' ? '\nDelivery fee: $15' : ''}
 Total Payment: $${grandTotal.toFixed(2)}${specialReq ? `\n\nSpecial requests: ${specialReq}` : ''}
 📅 ${method === 'delivery' ? 'Delivery' : 'Collection'} date: ${dateStr}
 🚚 Method: ${method === 'delivery' ? `Delivery\nAddress: ${address}` : 'Self-pickup'}
@@ -223,13 +323,15 @@ function previewFile(input) {
 }
 
 if (SOLD_OUT) {
-  const btn = document.querySelector('.btn-main');
-  btn.disabled = true;
-  btn.textContent = 'Sold Out';
-  btn.style.pointerEvents = 'none';
+  const btn = document.getElementById('checkout-btn');
+  if (btn) {
+    btn.disabled = true;
+    btn.textContent = 'Sold Out';
+    btn.style.pointerEvents = 'none';
 
-  const notice = document.createElement('p');
-  notice.textContent = 'Sorry, we are currently sold out on ALL dates. Follow our tiktok @nimi.sg to stay updated on preorder releases! 🍪';
-  notice.style.cssText = 'text-align:center; color:var(--cocoa); font-size:0.85rem; margin-top:0.5rem; opacity:0.8;';
-  btn.insertAdjacentElement('afterend', notice);
+    const notice = document.createElement('p');
+    notice.textContent = 'Sorry, we are currently sold out on ALL dates. Follow our tiktok @nimi.sg to stay updated on preorder releases! 🍪';
+    notice.style.cssText = 'text-align:center; color:var(--cocoa); font-size:0.85rem; margin-top:0.5rem; opacity:0.8;';
+    btn.insertAdjacentElement('afterend', notice);
+  }
 }
