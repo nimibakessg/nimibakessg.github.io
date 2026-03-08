@@ -65,6 +65,11 @@ function togglePostcard(checkbox) {
   if (wrap) wrap.style.display = checkbox.checked ? 'block' : 'none';
 }
 
+function toggleRemarks(checkbox, product) {
+  const wrap = document.getElementById(product + '-remarks-wrap');
+  if (wrap) wrap.style.display = checkbox.checked ? 'block' : 'none';
+}
+
 // ─── ADD-ONS ──────────────────────────────────────────────────────
 function getCookieAddons() {
   return Array.from(document.querySelectorAll('input[name="cookie-addon"]:checked')).map(el => ({
@@ -200,6 +205,8 @@ function submitOrder(e) {
   const bouquetAddons = bouquetInCart ? getBouquetAddons() : [];
   const bouquetAddonTotal = bouquetAddons.reduce((sum, a) => sum + a.price, 0);
   const postcardNote  = bouquetInCart ? (document.getElementById('postcard-note') ? document.getElementById('postcard-note').value.trim() : '') : '';
+  const cookieRemarks = document.getElementById('cookie-remarks') ? document.getElementById('cookie-remarks').value.trim() : '';
+  const flanRemarks   = document.getElementById('flan-remarks') ? document.getElementById('flan-remarks').value.trim() : '';
 
   const subtotal   = cookieTotal + cookieAddonTotal + flanTotal + flanAddonTotal + bPrice + bouquetAddonTotal;
   const deliveryFee = method === 'delivery' ? 15 : 0;
@@ -214,11 +221,13 @@ function submitOrder(e) {
   let orderLines = '';
   if (cookieQty > 0) {
     orderLines += `  ${cookieQty} Dubai Chewy Cookie${cookieQty > 1 ? 's' : ''} x $${ppu.toFixed(2)} = $${cookieTotal.toFixed(2)}\n`;
-    cookieAddons.forEach(a => { orderLines += `    + ${a.name} = $${a.price}\n`; });
+    cookieAddons.forEach(a => { orderLines += `    + ${a.name}${a.price > 0 ? ` = $${a.price}` : ''}\n`; });
+    if (cookieRemarks) orderLines += `    Remarks: "${cookieRemarks}"\n`;
   }
   if (flanQty > 0) {
     orderLines += `  ${flanQty} Leche Flan${flanQty > 1 ? 's' : ''} x $${FLAN_PRICE.toFixed(2)} = $${flanTotal.toFixed(2)}\n`;
-    flanAddons.forEach(a => { orderLines += `    + ${a.name} = $${a.price}\n`; });
+    flanAddons.forEach(a => { orderLines += `    + ${a.name}${a.price > 0 ? ` = $${a.price}` : ''}\n`; });
+    if (flanRemarks) orderLines += `    Remarks: "${flanRemarks}"\n`;
   }
   if (bouquetInCart) {
     const discountNote = bPrice === 15 ? ' (food item discount applied)' : '';
