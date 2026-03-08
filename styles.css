@@ -332,6 +332,7 @@ nav ul a:hover { opacity: 1; }
 .cart-empty { color: var(--cocoa); opacity: 0.35; font-size: 0.82rem; text-align: center; display: block; }
 .cart-divider { border-top: 1px solid rgba(59,31,14,0.1); margin: 0.4rem 0; }
 .cart-total { font-weight: 500; font-size: 0.95rem; }
+.cart-combo-discount { color: var(--pistachio); font-size: 0.88rem; }
 .order-note { font-size: 0.76rem; color: var(--cocoa); opacity: 0.48; margin-top: 1rem; }
 
 /* SHARED BUTTON */
@@ -708,6 +709,7 @@ footer a { color: var(--gold); text-decoration: none; }
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+  text-align: left;
   color: var(--brown);
   opacity: 0.42;
   margin-bottom: 0.5rem;
@@ -885,6 +887,7 @@ footer a { color: var(--gold); text-decoration: none; }
 
 .product-controls {
   padding: 0.75rem 0 0;
+  text-align: left;
 }
 .product-qty-row {
   display: flex;
