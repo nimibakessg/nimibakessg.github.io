@@ -992,10 +992,17 @@ footer a { color: var(--gold); text-decoration: none; }
 
 .product-img-wrap {
   width: 100%;
-  height: 220px;
+  aspect-ratio: 1 / 1;
   overflow: hidden;
   position: relative;
   background: var(--cream);
+}
+.product-img-wrap img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center;
+  display: block;
 }
 .product-img {
   width: 100%;
@@ -1053,6 +1060,60 @@ footer a { color: var(--gold); text-decoration: none; }
 }
 
 @media (max-width: 860px) {
-  .product-img-wrap { height: 180px; }
+  .product-section { max-width: 480px; margin-bottom: 1.4rem; }
   .product-section-body { padding: 1.1rem 1.3rem 1.2rem; }
+  .product-section-name { font-size: 1.15rem; }
+}
+
+/* ── MOBILE (phones ≤ 480px) ── */
+@media (max-width: 480px) {
+  nav { padding: 0.9rem 1rem; }
+  .nav-logo { font-size: 1.2rem; }
+
+  .hero { padding-top: 56px; }
+  .hero-text { padding: 2rem 1.2rem 1.5rem; }
+  .hero h1 { font-size: 2rem; }
+  .hero-desc { font-size: 0.88rem; }
+  .hero-cta { padding: 0.8rem 1.6rem; font-size: 0.82rem; }
+  .hero-badge { font-size: 0.58rem; }
+
+  .features-strip { flex-wrap: wrap; gap: 0.75rem 1rem; padding: 0.9rem 1rem; justify-content: center; }
+  .feature-item { font-size: 0.75rem; }
+
+  .order { padding: 2.5rem 1rem 2rem; }
+  .order h2 { font-size: 1.6rem; }
+  .order-subtitle { font-size: 0.82rem; }
+
+  .product-section { max-width: 100%; border-radius: 1rem; margin-bottom: 1.2rem; }
+  .product-section-body { padding: 1rem 1rem 1.1rem; }
+  .product-section-name { font-size: 1.05rem; }
+  .product-section-desc { font-size: 0.8rem; }
+  .product-section-title-row { gap: 0.5rem; }
+
+  .price-tier { font-size: 0.75rem; }
+  .price-sale { font-size: 1.2rem; }
+  .price-usual { font-size: 0.8rem; }
+  .price-current { font-size: 1.2rem; }
+
+  .product-qty-label { font-size: 0.8rem; }
+  .custom-qty-wrap input { width: 44px; font-size: 0.9rem; }
+  .step-btn { width: 32px; height: 32px; font-size: 1.1rem; }
+
+  .addons-grid { grid-template-columns: repeat(2, 1fr); gap: 0.5rem; }
+  .addons-grid-small { grid-template-columns: repeat(2, 1fr); }
+  .addon-card { padding: 0.7rem 0.4rem; }
+  .addon-name { font-size: 0.68rem; }
+  .addon-price { font-size: 0.68rem; }
+  .addon-emoji { font-size: 1.2rem; }
+
+  .cart-bar { padding: 0.7rem 1rem; font-size: 0.82rem; }
+  .cart-toggle { font-size: 0.75rem; }
+
+  .about { padding: 3rem 1.2rem 2.5rem; gap: 2rem; }
+  .about h2 { font-size: 1.6rem; }
+
+  .paynow-card { padding: 1.5rem 1rem; }
+  .paynow-card img { max-width: 180px; }
+
+  footer { padding: 1.5rem 1.2rem; font-size: 0.75rem; }
 }
