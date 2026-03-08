@@ -165,8 +165,12 @@ function renderCart() {
     });
   }
   if (bouquetQty > 0) {
-    const discountNote = bPrice === 15 ? ' <em style="font-size:0.7rem;color:var(--pistachio)">food discount</em>' : '';
-    lines += `<span>${bouquetQty} Rose Bouquet${bouquetQty > 1 ? 's' : ''}${discountNote} <strong>$${(bPrice * bouquetQty).toFixed(2)}</strong></span>`;
+    const fullPrice = 30 * bouquetQty;
+    lines += `<span>${bouquetQty} Rose Bouquet${bouquetQty > 1 ? 's' : ''} <strong>$${fullPrice.toFixed(2)}</strong></span>`;
+    if (bPrice === 15) {
+      const saving = (30 - 15) * bouquetQty;
+      lines += `<span class="cart-combo-discount">Combo Discount <strong>-$${saving.toFixed(2)}</strong></span>`;
+    }
     bouquetAddons.forEach(a => {
       const priceStr = a.price === 0 ? 'Free' : `+$${a.price}`;
       lines += `<span>${a.name} (bouquet) <strong>${priceStr}</strong></span>`;
@@ -227,9 +231,8 @@ function submitOrder(e) {
 
   customerData = { name, contact };
 
-  const dateStr = new Date(date + 'T00:00:00').toLocaleDateString('en-SG', {
-    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
-  });
+  const dateEl = document.getElementById('f-date');
+  const dateStr = dateEl.options[dateEl.selectedIndex].text;
 
   let orderLines = '';
   if (cookieQty > 0) {
@@ -243,8 +246,11 @@ function submitOrder(e) {
     if (flanRemarks) orderLines += `    Remarks: "${flanRemarks}"\n`;
   }
   if (bouquetQty > 0) {
-    const discountNote = bPrice === 15 ? ' (food item discount applied)' : '';
-    orderLines += `  ${bouquetQty} Rose Bouquet${bouquetQty > 1 ? 's' : ''} x $${bPrice} = $${(bPrice * bouquetQty).toFixed(2)}${discountNote}\n`;
+    orderLines += `  ${bouquetQty} Rose Bouquet${bouquetQty > 1 ? 's' : ''} x $30 = $${(30 * bouquetQty).toFixed(2)}\n`;
+    if (bPrice === 15) {
+      const saving = (30 - 15) * bouquetQty;
+      orderLines += `  Combo Discount = -$${saving.toFixed(2)}\n`;
+    }
     bouquetAddons.forEach(a => {
       const priceStr = a.price === 0 ? 'free' : `$${a.price}`;
       orderLines += `    + ${a.name} = ${priceStr}\n`;
