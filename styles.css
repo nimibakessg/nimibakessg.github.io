@@ -1101,3 +1101,37 @@ footer a { color: var(--gold); text-decoration: none; }
 
   footer { padding: 1.5rem 1.2rem; font-size: 0.75rem; }
 }
+
+.promo-row {
+  display: flex;
+  gap: 8px;
+}
+
+.promo-row input {
+  flex: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.btn-promo {
+  padding: 0 18px;
+  background: #222;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: background 0.2s;
+  white-space: nowrap;
+}
+
+.btn-promo:hover { background: #444; }
+
+#promo-msg {
+  font-size: 0.82rem;
+  margin-top: 5px;
+  display: block;
+}
+
+#promo-msg.success { color: #2e7d32; }
+#promo-msg.error   { color: #c62828; }
