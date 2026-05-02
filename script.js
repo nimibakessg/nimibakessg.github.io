@@ -10,6 +10,37 @@ let flanQty = 0;
 let bouquetQty = 0;
 let customerData = {};
 
+// ── PROMO CODES ──────────────────────────────────────
+// Add as many as you want: "CODE": discountPercent
+const PROMO_CODES = {
+  "MUMMY10": 10,
+};
+
+let appliedDiscount = 0; // tracks current active discount %
+
+function applyPromo() {
+  const input = document.getElementById("f-promo");
+  const msg   = document.getElementById("promo-msg");
+  const code  = input.value.trim().toUpperCase();
+
+  if (!code) {
+    msg.className = "error";
+    msg.textContent = "Please enter a promo code.";
+    return;
+  }
+
+  if (PROMO_CODES[code] !== undefined) {
+    appliedDiscount = PROMO_CODES[code];
+    msg.className = "success";
+    msg.textContent = `✓ "${code}" applied — ${appliedDiscount}% off!`;
+    input.disabled = true;
+  } else {
+    appliedDiscount = 0;
+    msg.className = "error";
+    msg.textContent = "Invalid promo code. Please try again.";
+  }
+}
+
 // ─── PRICING ──────────────────────────────────────────────────────
 function pricePerCookie(qty) {
   if (qty <= 0) return 0;
@@ -144,6 +175,8 @@ function renderCart() {
   const bouquetAddonTotal = bouquetAddons.reduce((sum, a) => sum + a.price, 0);
 
   const grand = cookieTotal + cookieAddonTotal + flanTotal + flanAddonTotal + bPrice * bouquetQty + bouquetAddonTotal;
+  const discountAmt     = (grand * appliedDiscount) / 100;
+  const discountedGrand = grand - discountAmt;
 
   if (grand === 0) {
     summary.innerHTML = '<span class="cart-empty">Add items above to get started</span>';
@@ -181,7 +214,11 @@ function renderCart() {
   summary.innerHTML = `
     ${lines}
     <div class="cart-divider"></div>
-    <span class="cart-total">${itemCount} item${itemCount !== 1 ? 's' : ''} · <strong>$${grand.toFixed(2)} total</strong></span>
+    <span class="cart-total">
+      ${itemCount} item${itemCount !== 1 ? 's' : ''} · 
+      <strong>$${discountedGrand.toFixed(2)} total</strong>
+      ${appliedDiscount > 0 ? `<span class="cart-combo-discount">${appliedDiscount}% off applied ✓</span>` : ''}
+    </span>
   `;
   btn.disabled = false;
 }
@@ -227,7 +264,8 @@ function submitOrder(e) {
 
   const subtotal   = cookieTotal + cookieAddonTotal + flanTotal + flanAddonTotal + bPrice * bouquetQty + bouquetAddonTotal;
   const deliveryFee = method === 'delivery' ? 15 : 0;
-  const grandTotal  = subtotal + deliveryFee;
+  const discount = (subtotal * appliedDiscount) / 100;
+  const grandTotal  = subtotal + deliveryFee - discount;
 
   customerData = { name, contact };
 
@@ -267,7 +305,7 @@ Name: ${name}
 Contact: ${contact}
 📦 Order:
 ${orderLines}Subtotal: $${subtotal.toFixed(2)}${method === 'delivery' ? '\nDelivery fee: $15' : ''}
-Total Payment: $${grandTotal.toFixed(2)}${specialReq ? `\n\nSpecial requests: ${specialReq}` : ''}
+Total Payment (after all discounts): $${grandTotal.toFixed(2)}${specialReq ? `\n\nSpecial requests: ${specialReq}` : ''}
 📅 ${method === 'delivery' ? 'Delivery' : 'Collection'} date: ${dateStr}
 🚚 Method: ${method === 'delivery' ? `Delivery\nAddress: ${address}` : 'Self-pickup'}
 

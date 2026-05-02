@@ -320,6 +320,15 @@
           <label for="f-address">Delivery Address</label>
           <textarea id="f-address" name="address" rows="2" placeholder="e.g. Block 123 Ang Mo Kio Ave 3, #04-56, S560123"></textarea>
         </div>
+        <!-- PROMO CODE -->
+        <div class="form-group">
+          <label for="f-promo">Promo Code</label>
+          <div class="promo-row">
+            <input type="text" id="f-promo" placeholder="Enter code" autocomplete="off" />
+            <button type="button" class="btn-promo" onclick="applyPromo()">Apply</button>
+          </div>
+          <span id="promo-msg"></span>
+        </div>
         <button type="submit" class="btn-main">Review &amp; Pay →</button>
       </form>
     </div>
