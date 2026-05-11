@@ -2,7 +2,7 @@
 const TELEGRAM_BOT_TOKEN = 'TELEGRAM_BOT_TOKEN';
 const TELEGRAM_CHAT_ID   = 'TELEGRAM_CHAT_ID';
 
-const SOLD_OUT = false;
+const SOLD_OUT = true;
 
 // ─── STATE ────────────────────────────────────────────────────────
 let cookieQty = 0;
@@ -13,7 +13,7 @@ let customerData = {};
 // ── PROMO CODES ──────────────────────────────────────
 // Add as many as you want: "CODE": discountPercent
 const PROMO_CODES = {
-  "MUMMY10": 10,
+  UWU50
 };
 
 let appliedDiscount = 0; // tracks current active discount %
