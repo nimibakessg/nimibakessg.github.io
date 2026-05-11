@@ -2,7 +2,7 @@
 const 8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA = '8513299564:AAEI5z23sfUTjEZFJ4Y_z09Rz8xO03V-EsA';
 const 901628799   = '901628799';
 
-const SOLD_OUT = true;
+const SOLD_OUT = false;
 
 // ─── STATE ────────────────────────────────────────────────────────
 let cookieQty = 0;
@@ -13,7 +13,6 @@ let customerData = {};
 // ── PROMO CODES ──────────────────────────────────────
 // Add as many as you want: "CODE": discountPercent
 const PROMO_CODES = {
-  UWU50,
 };
 
 let appliedDiscount = 0; // tracks current active discount %
