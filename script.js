@@ -13,6 +13,7 @@ let customerData = {};
 // ── PROMO CODES ──────────────────────────────────────
 // Add as many as you want: "CODE": discountPercent
 const PROMO_CODES = {
+  "FATMICH": 20,
 };
 
 let appliedDiscount = 0; // tracks current active discount %
