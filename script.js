@@ -15,7 +15,7 @@ let customerData = {};
 const PROMO_CODES = {
   "FATMICH": 20,
 };
-
+ 
 let appliedDiscount = 0; // tracks current active discount %
 
 function applyPromo() {
